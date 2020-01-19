@@ -1,2 +1,19 @@
 Base operations on Elliptic Curve on G1 and G2
+- Please print result after each step 
+- G1 - generator of elliptic curve group 1
+- G2 - generator of elliptic curve group 2
 
+1. Create jupyter file
+2. Include bn256 module from lib directory
+3. Generate three random numbers r1, r2, r3 in filed Fp1 with order 2^256
+4. Calculate: T1 = r1 * G1
+5. Calculate: T2 = r2 * G1
+6. Calculate: T3 = r3 * G1
+7. Calculate: TP = T1 + T2 - T3
+8. Calculate: T4 = r1 * G2
+9. Calculate: T5 = r2 * G3
+10. Calculate: T6 = r3 * G4
+11. Calculate: TQ = T4 + T5 - T6
+12. Calculate: tf = r1 + r2 - r3
+13. Calculate: E1 = pairing(G1, G2) ^ tf
+14. Calculate: E2 = pairing(TQ, TP)
