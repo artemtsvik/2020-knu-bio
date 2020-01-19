@@ -10,6 +10,6 @@ v2 = [-1, -1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1]
 Hamming distance = 0.25  (25% of bits is not the same)
 
 1. Create jupyter file
-2. Generate two random vectors v1 and v2
+2. Generate two random vectors v1 and v2 with length 16
 3. Create "hamming_distance" function
 4. Use "hamming_distance" function to calculate distance between v1 and v2
