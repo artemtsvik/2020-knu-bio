@@ -1,0 +1,20 @@
+"C:\Program Files (x86)\Python37\python.exe" C:/Users/Asus/Desktop/2020-knu-bio/solutions/task2/task2.py
+
+2. Generated two random vectors v1 and v2 with length 16:
+[-1 -1 -1  1  1  1  1 -1 -1  1  1  1 -1  1 -1  1]
+[ 1 -1 -1  1 -1  1  1  1 -1  1  1  1 -1 -1 -1  1]
+------------------------------------------------------------
+3. Created "hamming_distance" function:
+
+    def hamming_distance(vector1: np.array, vector2: np.array):
+        if vector1.shape == vector2.shape and len(vector1.shape) == 1:
+            vector_product = vector1 * vector2
+            return np.count_nonzero(vector_product == -1) / vector_product.shape[0]
+        else:
+            raise ValueError("arrays have different length or not 1-dim")
+
+------------------------------------------------------------
+4. Use "hamming_distance" function to calculate distance between v1 and v2
+	it is equals to 0.25
+
+Process finished with exit code 0
