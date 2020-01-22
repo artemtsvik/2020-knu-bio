@@ -15,5 +15,5 @@ Base operations on Elliptic Curve on G1 and G2
 10. Calculate: T6 = r3 * G4
 11. Calculate: TQ = T4 + T5 - T6
 12. Calculate: tf = r1 + r2 - r3
-13. Calculate: E1 = pairing(G1, G2) ^ tf
+13. Calculate: E1 = pairing(G1, G2) ^ (tf*tf)
 14. Calculate: E2 = pairing(TQ, TP)
