@@ -19,6 +19,9 @@ print ('T1=',T1)
 print('T2=',T2)
 print('T3=',T3)
 
+TP=T1.add(T2).add(T3.scalar_mul(bn256.order - 1))
+print('TP=',TP)
+
 T4=G2.scalar_mul(r1)
 T5=G2.scalar_mul(r1)
 T6=G2.scalar_mul(r1)
@@ -26,3 +29,8 @@ print('T4=',T4)
 print('T5=',T5)
 print('T6=',T6)
 
+TQ = T4.add(T5).add(T6.scalar_mul(bn256.order - 1))
+print('TQ=',TQ)
+
+tf=r1+r2-r3
+print('tf=',tf)
