@@ -35,3 +35,7 @@ print('TQ=',TQ)
 
 tf=r1+r2-r3            #tf = r1 + r2 - r3
 print('tf=',tf)
+
+E1=bn256.optimal_ate(G2,G1).exp(tf**2)
+E2 = bn256.optimal_ate(TQ,TP)
+print(E1==E2)
