@@ -24,8 +24,8 @@ TP=T1.add(T2).add(T3.scalar_mul(bn256.order - 1))     #TP = T1 + T2 - T3
 print('TP=',TP)
 
 T4=G2.scalar_mul(r1)   #T4 = r1 * G2
-T5=G2.scalar_mul(r1)   #T5 = r2 * G3
-T6=G2.scalar_mul(r1)   #T6 = r3 * G4
+T5=G2.scalar_mul(r2)   #T5 = r2 * G3
+T6=G2.scalar_mul(r3)   #T6 = r3 * G4
 print('T4=',T4)
 print('T5=',T5)
 print('T6=',T6)
