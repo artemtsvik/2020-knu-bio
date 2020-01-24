@@ -1,5 +1,6 @@
 import random
 import bn256 
+
 r1=random.randrange(2, bn256.order) #three random numbers
 r2=random.randrange(2, bn256.order)
 r3=random.randrange(2, bn256.order)
