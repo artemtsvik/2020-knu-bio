@@ -1,5 +1,5 @@
-#include <cybozu/random_generator.hpp>
 #include <mcl/bn256.hpp>
+#include <cybozu/random_generator.hpp>
 #include <iostream>
 
 using namespace mcl;
@@ -29,10 +29,9 @@ int main()
 	bn256::G1::mul(T3, P, r3);
 	
 	TP = T1 + T2 - T3;
-
-	std::cout << "G1 = " << P.getStr() << std::endl;
 	
-	std::cout << "T1 = " << T1.getStr() << std::endl 
+	std::cout << "G1 = " << P.getStr() << std::endl
+		<< "T1 = " << T1.getStr() << std::endl 
 		<< "T2 = " << T2.getStr() << std::endl
 		<< "T3 = " << T3.getStr() << std::endl << std::endl
 		<< "TP = " << TP.getStr() << std::endl << std::endl;
@@ -43,10 +42,8 @@ int main()
 	
 	TQ = T4 + T5 - T6;
 	
-	std::cout << "G2 = " << Q.getStr() << std::endl;
-	
-	
-	std::cout << "T4 = " << T4.getStr() << std::endl 
+	std::cout << "G2 = " << Q.getStr() << std::endl
+		<< "T4 = " << T4.getStr() << std::endl 
 		<< "T5 = " << T5.getStr() << std::endl
 		<< "T6 = " << T6.getStr() << std::endl << std::endl
 		<< "TQ = " << TQ.getStr() << std::endl << std::endl;
