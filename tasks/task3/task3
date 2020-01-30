@@ -1,1 +1,29 @@
 Implement Inner Product Encryption
+You can find algorithm in the presentation [23 - 27] pages
+
+1. Include all needed libs
+2. Include function of hamming to verify yor final result
+3. Generate two vectors v1, v2 of [-1, 1] with length 16 
+4. IPE: Key generation:
+	a. Transfer -1,1 to points. For v1 (registration template) you should use G2 generator, 
+		for v2 (authentication template) you should use G1 generator. 
+		Example:
+			v1 = -1, 1, -1, 1   v1points = invG2, G2, invG2, G2
+			v2 =  1, 1, -1, 1   v2points = G1, G1, invG1, G1
+
+	b. Generate array 's' random keys with length equal to bio template length (16)
+	c. Generate array 't' random keys with length equal to bio template length (16)
+	d. Generate array 'u' random keys with length equal to bio template length + 2 (18)
+	e. Generate array 'v' random keys with length equal to bio template length + 2 (18)
+	f. Generate random h1 number and calculate point for G1 -> H1
+	g. Generate random h2 number and calculate point for G2 -> H2
+	j. Calculate gen1_h array keys: gen1_h[i] = s[i] * G1 + t[i] * H1
+        i. Calculate gen2_h array keys: gen2_h[i] = u[i] * G2 + v[i] * H2
+5. IPE: Registration:
+	Use presentation
+
+6. IPE: Authentication:
+	Use presentation
+
+7. IPE: Pre-compute table with powers of e(G2, G1), Exmaple of table t[0] = 1, t[1] = e(G2, G1)^1, t[1] = e(G2, G1)^2, t[1] = e(G2, G1)^3, ..., t[1] = e(G2, G1)^16
+8. Find result using pre-computed power table and use Hamming distance function to show result
