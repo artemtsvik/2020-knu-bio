@@ -287,8 +287,8 @@ int main()
 	bn256::G1 G1, H1;
 	bn256::G2 G2, H2;
 	
-	bn256::hashAndMapToG1(G1, "abc", 3);
-	bn256::hashAndMapToG2(G2, "abc", 3);
+	bn256::mapToG1(G1, 1);
+	bn256::mapToG2(G2, 1);
 	
 	bn256::Fr h1, h2;
 	h1.setRand(rg);

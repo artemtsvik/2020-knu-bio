@@ -12,8 +12,8 @@ int main()
 	bn256::G1 P, T1, T2, T3, TP;
 	bn256::G2 Q, T4, T5, T6, TQ;
 	
-	bn256::hashAndMapToG1(P, "hello", 5);
-	bn256::hashAndMapToG2(Q, "world", 5);
+	bn256::mapToG1(P, 1);
+	bn256::mapToG2(Q, 1);
 	
 	bn256::Fr r1, r2, r3;
 	r1.setRand(rg);
