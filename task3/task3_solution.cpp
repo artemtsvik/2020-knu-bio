@@ -14,20 +14,20 @@ using namespace mcl;
 static cybozu::RandomGenerator rg;
 
 
-inline void print_vector(vector<short> &vec)
+inline void print_vector(const vector<short> &vec)
 {
-	for (vector<short>::iterator i = vec.begin(), vec_end = vec.end(); i != vec_end; ++i)
+	for (const short &el : vec)
 	{
-		std::cout << *i << " ";
+		std::cout << el << " ";
 	}
 	std::cout << std::endl;
 }
 
-inline void print_vector(vector<bn256::Fr> &vec)
+inline void print_vector(const vector<bn256::Fr> &vec)
 {
-	for (vector<bn256::Fr>::iterator i = vec.begin(), vec_end = vec.end(); i != vec_end; ++i)
+	for (const bn256::Fr &el : vec)
 	{
-		std::cout << (*i).getStr() << " ";
+		std::cout << el.getStr() << " ";
 	}
 	std::cout << std::endl;
 }
@@ -54,14 +54,14 @@ inline void gen_keys(vector<bn256::Fr> &vec, unsigned long size, cybozu::RandomG
 }
 
 
-float hamming_distance(vector<short> &vec1, vector<short> &vec2)
+float hamming_distance(const vector<short> &vec1, const vector<short> &vec2)
 {
 	if (vec1.size() != vec2.size())
 	{
 		throw "Undefined for sequences of unequal length.";
 	}
 	float dif = 0;
-	for (vector<short>::iterator i = vec1.begin(), j = vec2.begin(), end_vec1 = vec1.end();
+	for (vector<short>::const_iterator i = vec1.begin(), j = vec2.begin(), end_vec1 = vec1.end();
 	end_vec1 != i; ++i, ++j)
 	{
 		if (*i != *j)
@@ -73,7 +73,7 @@ float hamming_distance(vector<short> &vec1, vector<short> &vec2)
 }
 
 
-inline void transfer_vec_to_G1(vector<bn256::G1> &vpoints, vector<short> &vec, bn256::G1 &P)
+inline void transfer_vec_to_G1(vector<bn256::G1> &vpoints, const vector<short> &vec, const bn256::G1 &P)
 {
 	for (short el : vec)
 	{
@@ -82,7 +82,7 @@ inline void transfer_vec_to_G1(vector<bn256::G1> &vpoints, vector<short> &vec, b
 }
 
 
-inline void transfer_vec_to_G2(vector<bn256::G2> &vpoints, vector<short> &vec, bn256::G2 &Q)
+inline void transfer_vec_to_G2(vector<bn256::G2> &vpoints, const vector<short> &vec, const bn256::G2 &Q)
 {
 	for (short el : vec)
 	{
@@ -98,10 +98,10 @@ inline void master_key_generation(
 	vector<bn256::Fr> &v,
 	vector<bn256::G1> &gen1_h,
 	vector<bn256::G2> &gen2_h,
-	bn256::G1 &G1,
-	bn256::G1 &H1,
-	bn256::G2 &G2,
-	bn256::G2 &H2,
+	const bn256::G1 &G1,
+	const bn256::G1 &H1,
+	const bn256::G2 &G2,
+	const bn256::G2 &H2,
 	cybozu::RandomGenerator &generator
 	) 
 {
@@ -133,12 +133,12 @@ inline void master_key_generation(
 
 inline void decryption_key_generation(
 	vector<bn256::G2> &reg_template,
-	vector<bn256::G2> &gen2_h,
-	vector<bn256::Fr> &s,
-	vector<bn256::Fr> &t,
-	vector<bn256::G2> &v1points,
-	bn256::G2 &G2,
-	bn256::G2 &H2,
+	const vector<bn256::G2> &gen2_h,
+	const vector<bn256::Fr> &s,
+	const vector<bn256::Fr> &t,
+	const vector<bn256::G2> &v1points,
+	const bn256::G2 &G2,
+	const bn256::G2 &H2,
 	cybozu::RandomGenerator &generator)
 {
 	bn256::Fr r0;
@@ -152,8 +152,8 @@ inline void decryption_key_generation(
 	bn256::G2::mul(TQ, H2, r0);
 	reg_template.push_back(TQ);
 	
-	vector<bn256::Fr>::iterator si = s.begin(), ti = t.begin();
-	vector<bn256::G2>::iterator v1pointer = v1points.begin(), v1end = v1points.end(), gen2_pointer = gen2_h.begin();
+	vector<bn256::Fr>::const_iterator si = s.begin(), ti = t.begin();
+	vector<bn256::G2>::const_iterator v1pointer = v1points.begin(), v1end = v1points.end(), gen2_pointer = gen2_h.begin();
 	
 	bn256::G2 d03, d04;
 	bn256::G2::mul(d03, *v1pointer, *(si++));
@@ -173,7 +173,7 @@ inline void decryption_key_generation(
 	bn256::G2::mul(TQ, *(gen2_pointer++), r0);
 	reg_template.push_back(TQ - d04);
 	
-	for (vector<bn256::G2>::iterator v1ptr = v1points.begin(); v1ptr != v1end; ++gen2_pointer, ++v1ptr)
+	for (vector<bn256::G2>::const_iterator v1ptr = v1points.begin(); v1ptr != v1end; ++gen2_pointer, ++v1ptr)
 	{
 		bn256::G2::mul(TQ, *gen2_pointer, r0);
 		reg_template.push_back(*v1ptr + TQ);
@@ -183,12 +183,12 @@ inline void decryption_key_generation(
 
 inline void encryption_authentication(
 	vector<bn256::G1> &auth_template,
-	vector<bn256::G1> &gen1_h,
-	vector<bn256::Fr> &u,
-	vector<bn256::Fr> &v,
-	vector<bn256::G1> &v2points,
-	bn256::G1 &G1,
-	bn256::G1 &H1,
+	const vector<bn256::G1> &gen1_h,
+	const vector<bn256::Fr> &u,
+	const vector<bn256::Fr> &v,
+	const vector<bn256::G1> &v2points,
+	const bn256::G1 &G1,
+	const bn256::G1 &H1,
 	cybozu::RandomGenerator &generator)
 {
 	bn256::Fr r0;
@@ -204,14 +204,14 @@ inline void encryption_authentication(
 	
 	bn256::G1::mul(TP, H1, r0);
 	auth_template.push_back(TP);
-	for (vector<bn256::G1>::iterator ci = v2points.begin(), h = gen1_h.begin(), h_end = gen1_h.end(); h != h_end; ++ci, ++h)
+	for (vector<bn256::G1>::const_iterator ci = v2points.begin(), h = gen1_h.begin(), h_end = gen1_h.end(); h != h_end; ++ci, ++h)
 	{
 		bn256::G1::mul(TP, *h, r0);
 		auth_template.push_back(*ci + TP);
 	}
 	
-	vector<bn256::G1>::iterator auth_template_ptr = auth_template.begin() + 2;
-	vector<bn256::Fr>::iterator ui = u.begin(), vi = v.begin(), u_end = u.end();
+	vector<bn256::G1>::const_iterator auth_template_ptr = auth_template.begin() + 2;
+	vector<bn256::Fr>::const_iterator ui = u.begin(), vi = v.begin(), u_end = u.end();
 	bn256::G1 c01, c02;
 	
 	bn256::G1::mul(c01, *auth_template_ptr, *(ui++));
@@ -231,7 +231,7 @@ inline void encryption_authentication(
 }
 
 
-inline void compute_logarithmic_table(vector<bn256::Fp12> &vec, bn256::G1 &P, bn256::G2 &Q)
+inline void compute_logarithmic_table(vector<bn256::Fp12> &vec, const bn256::G1 &P, const bn256::G2 &Q)
 {
 	bn256::Fp12 gt, tmp;
 	bn256::pairing(gt, P, Q);
@@ -251,11 +251,11 @@ inline void compute_logarithmic_table(vector<bn256::Fp12> &vec, bn256::G1 &P, bn
 }
 
 
-long decryption_authentication(vector<bn256::G1> &auth_template, vector<bn256::G2> &reg_template, vector<bn256::Fp12> &logarithmic_table)
+long decryption_authentication(const vector<bn256::G1> &auth_template, const vector<bn256::G2> &reg_template, const vector<bn256::Fp12> &logarithmic_table)
 {
 	bn256::Fp12 d, tmp;
-	vector<bn256::G1>::iterator dki = auth_template.begin(), auth_template_end = auth_template.end();
-	vector<bn256::G2>::iterator cti = reg_template.begin();
+	vector<bn256::G1>::const_iterator dki = auth_template.begin(), auth_template_end = auth_template.end();
+	vector<bn256::G2>::const_iterator cti = reg_template.begin();
 	bn256::pairing(d, *(dki++), *(cti++));
 	
 	for (; dki != auth_template_end; ++dki, ++cti)
@@ -264,7 +264,7 @@ long decryption_authentication(vector<bn256::G1> &auth_template, vector<bn256::G
 		d *= tmp;
 	}
 	
-	std::vector<bn256::Fp12>::iterator itr = std::find(logarithmic_table.begin(), logarithmic_table.end(), d);
+	std::vector<bn256::Fp12>::const_iterator itr = std::find(logarithmic_table.begin(), logarithmic_table.end(), d);
 	return std::distance(logarithmic_table.begin(), itr);
 }
 
@@ -343,7 +343,7 @@ int main()
 	t2 = std::chrono::high_resolution_clock::now();
 	
 	std::cout << "Decryption Authentication Time: " 
-		<< std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << "s." << std::endl << std::endl;
+		<< std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << "ms." << std::endl << std::endl;
 	
 	std::cout << "Result: " << (float)a / N << std::endl
 		<< "Hamming distance between v1 and v2: " << hamming_distance(v1, v2) << std::endl;

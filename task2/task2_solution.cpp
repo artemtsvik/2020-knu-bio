@@ -6,7 +6,7 @@
 using std::vector;
 
 
-inline void gen_vector(vector<int> &vec, unsigned long size, std::default_random_engine &generator)
+inline void gen_vector(vector<short> &vec, unsigned long size, std::default_random_engine &generator)
 {
 	std::bernoulli_distribution distribution(0.5);
 	for (unsigned long i = 0; i != size; ++i)
@@ -16,14 +16,14 @@ inline void gen_vector(vector<int> &vec, unsigned long size, std::default_random
 }
 
 
-float hamming_distance(vector<int> &vec1, vector<int> &vec2)
+float hamming_distance(const vector<short> &vec1, const vector<short> &vec2)
 {
 	if (vec1.size() != vec2.size())
 	{
 		throw "Undefined for sequences of unequal length.";
 	}
 	float dif = 0;
-	for (vector<int>::iterator i = vec1.begin(), j = vec2.begin(), end_vec1 = vec1.end();
+	for (vector<short>::const_iterator i = vec1.begin(), j = vec2.begin(), end_vec1 = vec1.end();
 	end_vec1 != i; ++i, ++j)
 	{
 		if (*i != *j)
@@ -35,11 +35,11 @@ float hamming_distance(vector<int> &vec1, vector<int> &vec2)
 }
 
 
-inline void print_vector(vector<int> &vec)
+inline void print_vector(const vector<short> &vec)
 {
-	for (vector<int>::iterator i = vec.begin(), vec_end = vec.end(); i != vec_end; ++i)
+	for (const short &el : vec)
 	{
-		std::cout << *i << " ";
+		std::cout << el << " ";
 	}
 	std::cout << std::endl;
 }
@@ -48,7 +48,7 @@ inline void print_vector(vector<int> &vec)
 int main()
 {
 	std::default_random_engine generator(std::time(nullptr));
-	vector<int> v1, v2;
+	vector<short> v1, v2;
 	
 	gen_vector(v1, 16, generator);
 	gen_vector(v2, 16, generator);
