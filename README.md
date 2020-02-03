@@ -8,5 +8,5 @@ The idea is to generate a random system of linear equations with registration or
 TODO list:
 
 0: Finish lib.matrix.py
-0.1: rand_matrix function
-0.2: inverse_matrix function
+	0.1: rand_matrix function
+	0.2: inverse_matrix function
