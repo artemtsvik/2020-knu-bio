@@ -1,11 +1,12 @@
 # 2020-knu-bio
-Crypto for Biometrics
+Crypto for Biometrics, K.Krutoy
 
+My modification of IPE algorithm is a simple stirring of scalars in the degrees of ate pairing.
 
-some tips for bn256 module:
-- curve_G - generator (point) of group 1
-- twist_G - generator (point) of group 2
-- point1.add(point2) - add two points, point1 + point2
-- point1.scalar_mul(value) - value * point1, value is scalar of Fp1, point1 is a point of G1 or G2
-- random.randrange(2, bn256.order) - generate scalar in order 2 ^ 256
-- bn256.optimal_ate - Ate pairing of G2 and G1 points
+The idea is to generate a random system of linear equations with registration or authentication template coefficients and replace old coefficients with new linear combinations. It is equivalent to generate two invertible matrices and use it to the registration and authentication templates. Calculations showed that the second matrix must be the inverse of the first.
+
+TODO list:
+
+0: Finish lib.matrix.py
+0.1: rand_matrix function
+0.2: inverse_matrix function

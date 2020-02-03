@@ -1,6 +1,11 @@
 import lib.bn256 as bn256
 import random as rand
 import time
+import lib.matrix as matrix
+
+#TODO: look throw lib.matrix.py
+
+# for algorithm modification descryption look throw README.md
 
 q = bn256.order
 
@@ -33,7 +38,7 @@ def points(v,G): # vector of -1,1 will be returned as vector of -G,G respectivly
     return out
 
 class MSK: # class for master key
-    def __init__(self,H1,H2,gen1_h,gen2_h,s,t,u,v):
+    def __init__(self,H1,H2,gen1_h,gen2_h,s,t,u,v,A):
         self.H1 = H1
         self.H2 = H2
         self.gen1_h = gen1_h
@@ -42,6 +47,7 @@ class MSK: # class for master key
         self.t = t
         self.u = u
         self.v = v
+        self.A = A
 
 class IPE: # inner product encryption realization
     @time_spent
@@ -55,13 +61,14 @@ class IPE: # inner product encryption realization
         t = gen_rand_vect(self.dim)
         u = gen_rand_vect(self.dim+2)
         v = gen_rand_vect(self.dim+2)
+        A = matrix.rand_matrix(self.dim+4,q)
         h1 = rand.randint(2,q)
         H1 = self.G1.scalar_mul(h1)
         h2 = rand.randint(2,q)
         H2 = self.G2.scalar_mul(h2)
         gen1_h = [self.G1.scalar_mul(s[i]).add(H1.scalar_mul(t[i])) for i in range(self.dim)]
         gen2_h = [self.G2.scalar_mul(u[i]).add(H2.scalar_mul(v[i])) for i in range(self.dim+2)]
-        return MSK(H1,H2,gen1_h,gen2_h,s,t,u,v)
+        return MSK(H1,H2,gen1_h,gen2_h,s,t,u,v,A)
     @time_spent
     def Registration(self,msk,v1): # generation of registration template
         self.v1points = points(v1,self.G2)
@@ -76,7 +83,7 @@ class IPE: # inner product encryption realization
         reg_template[2] = reg_template[2].add(inv(f2))
         reg_template[3] = reg_template[3].add(inv(f3))
         reg_template[4] = reg_template[4].add(self.v1points[0])
-        return reg_template
+        return self.reg_sort(msk.A,reg_template)
     @time_spent
     def Authentication(self,msk,v2):  # generation of authentication template
         self.v2points = points(v2,self.G1)
@@ -94,7 +101,7 @@ class IPE: # inner product encryption realization
             f1 = f1.add(auth_template[i+2].scalar_mul(msk.v[i]))
         auth_template[0] = auth_template[0].add(inv( f0 ))
         auth_template[1] = auth_template[1].add(inv( f1 ))
-        return auth_template
+        return self.auth_sort(matrix.inverse_matrix(msk.A),auth_template)
     @time_spent
     def LogarithmTable(self): # generation of logarithm table of powers of e(G2,G1)
         A = bn256.optimal_ate(self.G2,self.G1)
@@ -109,7 +116,22 @@ class IPE: # inner product encryption realization
         for i in range(1,self.dim+4):
             e = e.mul(bn256.optimal_ate(reg_template[i],auth_template[i]))
         return self.LogarithmTable().index(e)/self.dim
-
+    def auth_sort(self,mat,auth_template):
+        _template = []
+        for i in range(self.dim+4):
+            T = auth_template[0].scalar_mul(mat[0][i])
+            for j in range(1,self.dim+4):
+                T = T.add(auth_template[j].scalar_mul(mat[j][i]))
+            _template.append(T)
+        return _template
+    def reg_sort(self,mat,reg_template):
+        _template = []
+        for i in range(self.dim+4):
+            T = reg_template[0].scalar_mul(mat[i][0])
+            for j in range(1,self.dim+4):
+                T = T.add(reg_template[j].scalar_mul(mat[i][j]))
+            _template.append(T)
+        return _template
 @time_spent
 def main():
 
