@@ -1,1 +1,51 @@
 Implement Inner Product Encryption
+You can find algorithm in the presentation [23 - 27] pages
+
+1. Include all needed libs
+2. Include function of hamming to verify yor final result
+3. Generate two vectors v1, v2 of [-1, 1] with length 16
+4. IPE: Key generation:
+	a. Transfer -1,1 to points. For v1 (registration template) you should use G2 generator,
+		for v2 (authentication template) you should use G1 generator.
+		Example:
+			v1 = -1, 1, -1, 1   v1points = invG2, G2, invG2, G2
+			v2 =  1, 1, -1, 1   v2points = G1, G1, invG1, G1
+
+	b. Generate array 's' random keys with length equal to bio template length (16)
+	c. Generate array 't' random keys with length equal to bio template length (16)
+	d. Generate array 'u' random keys with length equal to bio template length + 2 (18)
+	e. Generate array 'v' random keys with length equal to bio template length + 2 (18)
+	f. Generate random h1 number and calculate point for G1 -> H1
+	g. Generate random h2 number and calculate point for G2 -> H2
+	j. Calculate gen1_h array keys: gen1_h[i] = s[i] * G1 + t[i] * H1
+        i. Calculate gen2_h array keys: gen2_h[i] = u[i] * G2 + v[i] * H2
+
+5. IPE: Registration:
+	5.1. Generate random number r0
+	5.2. Init array 'reg_template' of points with length 16 + 4.
+	5.3. Calculate reg_template[0] = r0 * G2
+	5.4. Calculate reg_template[1] = r0 * H2
+	5.5. Calculate for reg_template[2:18+2] = r0 * gen2_h[i], where i = 0 to 18
+	5.6. Calculate for reg_template[2] = reg_template[2] - s[i] * v1points[i], where i = 0 to 16
+	5.7. Calculate for reg_template[3] = reg_template[3] - t[i] * v1points[i], where i = 0 to 16
+	5.8. Calculate for reg_template[4:16+4] = reg_template[4:16+4] + v1points[i], where i = 0 to 16
+	5.9. reg_template is your encrypted bio template for registration
+
+6. IPE: Authentication:
+	6.1. Generate random number r0 (it is another r0 then in previous step)
+	6.2. Init array 'auth_template' of points with length 16 + 4.
+	6.3. Init auth_template[0,1] = 0 * G1 (we get 'infinitive points O, we will use in to add other points: O + P1 = P1')
+	6.4. Calculate auth_template[2] = r0 * G1
+	6.5. Calculate auth_template[3] = r0 * H1
+	6.6. Calulate auth_template[4: 16+4] = (r0 * gen1_h[i]) + v2points[i], where i = 0 to 16
+	6.7. Calculate for auth_template[0] = auth_template[0] - (u[i] * auth_template[i + 2]), where i = 0 to 16+2
+	6.8. Calculate for auth_template[1] = auth_template[1] - (v[i] * auth_template[i + 2]), where i = 0 to 16+2
+	6.9. auth_template is your encrypted bio template for authentication
+	6.10. Calculate Inner Product Encryption using reg_template and auth_template:
+		6.10.1. e *= pairing(reg_template[i], auth_template[i]), where i = 0 to 16+4
+		6.11.2. Next task is 8 after generate table of powers in taks 7.
+
+
+
+7. IPE: Pre-compute table with powers of e(G2, G1), Exmaple of table t[0] = 1, t[1] = e(G2, G1)^1, t[1] = e(G2, G1)^2, t[1] = e(G2, G1)^3, ..., t[1] = e(G2, G1)^16
+8. Find result using pre-computed power table and use Hamming distance function to show result
