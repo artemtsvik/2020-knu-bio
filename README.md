@@ -35,3 +35,7 @@ TODO list:
 0.1: rand_matrix function
 
 0.2: inverse_matrix function
+
+# some notes
+
+The random matrix can be replaced with a certain invertible matrix.
