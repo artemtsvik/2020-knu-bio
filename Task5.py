@@ -1,7 +1,7 @@
+import lib.matrix as matrix
 import lib.bn256 as bn256
 import random as rand
 import time
-import lib.matrix as matrix
 
 #TODO: look throw lib.matrix.py
 
@@ -21,6 +21,14 @@ def time_spent(func): #Decorator for estimating perfomence of certain function.
 def HD(x,y): # Hamming distance
     assert len(x) == len(y)
     return (len(x) - sum([i*j for (i, j) in zip(y, x)]))/(2*len(x)) # (|x| - (x,y))/(2|x|) where (,) is an inner product
+
+def HD_matrix(x,y,A,B): # Hamming distance using the action of matrices
+    v1 = []
+    v2 = []
+    for i in range(len(A)):
+        v1.append(sum([x[j]*A[j][i] for j in range(len(A))]))
+        v2.append(sum([y[j]*B[i][j] for j in range(len(B))]))
+    return HD(v1,v2)
 
 def inv(P): return P.scalar_mul(q - 1) # inverse element for the elliptic curve group.
 
@@ -56,12 +64,14 @@ class IPE: # inner product encryption realization
         self.G1 = G1 # the generator of curve group (Authentication space group)
         self.G2 = G2 # the generator of twist group (Registration space group)
     @time_spent
-    def KeyGen(self): # generation of msk
+    def KeyGen(self,A=True): # generation of msk
         s = gen_rand_vect(self.dim)
         t = gen_rand_vect(self.dim)
         u = gen_rand_vect(self.dim+2)
         v = gen_rand_vect(self.dim+2)
-        A = matrix.rand_matrix(self.dim+4,q)
+        if A: A = matrix.rand_matrix(self.dim+4,1)
+        print('\nRandom unimodular matrix:')
+        matrix.print_matrix(A)
         h1 = rand.randint(2,q)
         H1 = self.G1.scalar_mul(h1)
         h2 = rand.randint(2,q)
@@ -83,7 +93,7 @@ class IPE: # inner product encryption realization
         reg_template[2] = reg_template[2].add(inv(f2))
         reg_template[3] = reg_template[3].add(inv(f3))
         reg_template[4] = reg_template[4].add(self.v1points[0])
-        return self.reg_sort(msk.A,reg_template)
+        return self.reg_sort(matrix.format_matrix(matrix.inverse_matrix(msk.A),q),reg_template)
     @time_spent
     def Authentication(self,msk,v2):  # generation of authentication template
         self.v2points = points(v2,self.G1)
@@ -101,7 +111,7 @@ class IPE: # inner product encryption realization
             f1 = f1.add(auth_template[i+2].scalar_mul(msk.v[i]))
         auth_template[0] = auth_template[0].add(inv( f0 ))
         auth_template[1] = auth_template[1].add(inv( f1 ))
-        return self.auth_sort(matrix.inverse_matrix(msk.A),auth_template)
+        return self.auth_sort(matrix.format_matrix(msk.A,q),auth_template)
     @time_spent
     def LogarithmTable(self): # generation of logarithm table of powers of e(G2,G1)
         A = bn256.optimal_ate(self.G2,self.G1)
@@ -119,26 +129,29 @@ class IPE: # inner product encryption realization
     def auth_sort(self,mat,auth_template):
         _template = []
         for i in range(self.dim+4):
-            T = auth_template[0].scalar_mul(mat[0][i])
+            T = auth_template[0].scalar_mul(mat[i][0])
             for j in range(1,self.dim+4):
-                T = T.add(auth_template[j].scalar_mul(mat[j][i]))
+                T = T.add(auth_template[j].scalar_mul(mat[i][j]))
             _template.append(T)
         return _template
     def reg_sort(self,mat,reg_template):
         _template = []
         for i in range(self.dim+4):
-            T = reg_template[0].scalar_mul(mat[i][0])
+            T = reg_template[0].scalar_mul(mat[0][i])
             for j in range(1,self.dim+4):
-                T = T.add(reg_template[j].scalar_mul(mat[i][j]))
+                T = T.add(reg_template[j].scalar_mul(mat[j][i]))
             _template.append(T)
         return _template
 @time_spent
 def main():
 
-    dim = 16
+    dim = 2
 
     G1 = bn256.curve_G
     G2 = bn256.twist_G
+
+    v1 = gen_rand_vect(dim+4,1,True)
+    v2 = gen_rand_vect(dim+4,1,True)
 
     reg_vect = gen_rand_vect(dim,1,True)
     auth_vect = gen_rand_vect(dim,1,True)
@@ -151,9 +164,14 @@ def main():
     reg_template = myIPE.Registration(msk,reg_vect)
     auth_template = myIPE.Authentication(msk,auth_vect)
 
+    print('\n(*) Hamming distance:',HD(v1,v2))
+    print('(*) Hamming distance via matrix action:',HD_matrix(v1,v2,matrix.inverse_matrix(msk.A),msk.A),'\n')
+
     dist = myIPE.HammingDistance(reg_template,auth_template)
 
     print('Hamming distance:',HD(reg_vect,auth_vect))
     print('Hamming distance via homomorphic encryption:',dist)
+
+def test():pass
 
 if __name__ == '__main__': main()
