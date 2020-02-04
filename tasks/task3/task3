@@ -5,7 +5,7 @@ You can find algorithm in the presentation [23 - 27] pages
 2. Include function of hamming to verify yor final result
 3. Generate two vectors v1, v2 of [-1, 1] with length 16 
 4. IPE: Key generation:
-	a. Transfer -1,1 to points. For v1 (registration template) you should use G2 generator, 
+	a. Transfeъъ	ts. For v1 (registration template) you should use G2 generator, 
 		for v2 (authentication template) you should use G1 generator. 
 		Example:
 			v1 = -1, 1, -1, 1   v1points = invG2, G2, invG2, G2
