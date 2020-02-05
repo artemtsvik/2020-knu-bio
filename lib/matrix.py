@@ -1,10 +1,6 @@
 import numpy as np
 import random as rand
 
-'''
-TODO:
-    Understand what the fuck
-'''
 def rand_matrix(dim,q):
     L = [[0 for j in range(dim)] for i in range(dim)]
     U = [[0 for j in range(dim)] for i in range(dim)]
@@ -27,9 +23,7 @@ def format_matrix(a,q):
 def format_number(number,q):
     if 0 <= number < q: return number
     elif number < 0: number = -number*(q-1)
-    while number >= q:
-        number -= q
-    return number
+    return int(number)
 
 def two_vect_with_dot1(dim,q,iter):
     z = [0]*(dim-iter-1)
@@ -44,7 +38,8 @@ def two_vect_with_dot1(dim,q,iter):
 def det(A): return np.linalg.det(np.array(A))
 def mul_matrix(A, B): return list(np.dot(np.array(A),np.array(B)))
 def inverse_matrix(A): return list(np.linalg.inv(np.array(A)))
-
+def transpose_matrix(A): return list(np.array(A).transpose())
+def invT(A): return inverse_matrix(transpose_matrix(A))
 def copy_matrix(M): return [[M[i][j] for j in range(len(M))] for i in range(len(M))]
 
 def print_matrix(M):
