@@ -90,7 +90,7 @@ class IPE: # inner product encryption realization
         reg_template[2] = reg_template[2].add(inv(f2))
         reg_template[3] = reg_template[3].add(inv(f3))
         reg_template[4] = reg_template[4].add(self.v1points[0])
-        return self.sort(reg_template,matrix.transpose_matrix(msk.A))
+        return self.sort(reg_template,matrix.inverse_matrix(msk.A))
     @time_spent
     def Authentication(self,msk,v2):  # generation of authentication template
         self.v2points = points(v2,self.G1)
@@ -108,7 +108,7 @@ class IPE: # inner product encryption realization
             f1 = f1.add(auth_template[i+2].scalar_mul(msk.v[i]))
         auth_template[0] = auth_template[0].add(inv( f0 ))
         auth_template[1] = auth_template[1].add(inv( f1 ))
-        return self.sort(auth_template,matrix.inverse_matrix(msk.A))
+        return self.sort(auth_template,matrix.transpose_matrix(msk.A))
     @time_spent
     def LogarithmTable(self): # generation of logarithm table of powers of e(G2,G1)
         A = bn256.optimal_ate(self.G2,self.G1)
