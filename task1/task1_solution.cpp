@@ -1,3 +1,8 @@
+/**
+ * Artem Tsvik, 2020
+ * Compiler: MSYS MinGW32 g++ 9.1.0
+ */
+
 #include <mcl/bn256.hpp>
 #include <cybozu/random_generator.hpp>
 #include <iostream>
