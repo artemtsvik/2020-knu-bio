@@ -1,7 +1,9 @@
 import lib.bn256 as bn256
 import lib.matrix as matrix
+import lib.biometrics as biometrics
 import random as rand
 import time
+from PIL import Image
 from copy import copy
 
 q = bn256.order
@@ -138,13 +140,16 @@ class IPE: # inner product encryption realization
 @time_spent
 def main():
 
-    dim = 16
-
     G1 = bn256.curve_G
     G2 = bn256.twist_G
 
-    reg_vect = gen_rand_vect(dim,1,True)
-    auth_vect = gen_rand_vect(dim,1,True)
+    reg_vect = biometrics.procces(Image.open('./biometrics/reg.png'))
+    auth_vect = biometrics.procces(Image.open('./biometrics/auth.png'))
+
+    assert len(reg_vect) == len(auth_vect)
+
+    dim = len(reg_vect)
+
     print('Registration vector:',reg_vect)
     print('Authentication vector:',auth_vect)
 

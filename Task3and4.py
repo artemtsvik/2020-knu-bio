@@ -113,7 +113,7 @@ class IPE: # inner product encryption realization
 @time_spent
 def main():
 
-    dim = 16
+    dim = 500
 
     G1 = bn256.curve_G
     G2 = bn256.twist_G
