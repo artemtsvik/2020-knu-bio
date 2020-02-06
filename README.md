@@ -24,7 +24,7 @@ We can replace coefitions reg_i, auth_i with their linear combinations in the ne
 
 After direct calculations we'll see that the only thing that we must require is the following:
 
-    matrix of alpha[i][j] = inverse of matrix of beta[j][i]
+    matrix of alpha[j][i] = inverse of matrix of beta[i][j]
 
 This procedure will mix our coefitions to avoid the problem.
 
