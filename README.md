@@ -1,5 +1,6 @@
 # 2020-knu-bio
 Crypto for Biometrics
+<<<<<<< HEAD
 
 
 some tips for bn256 module:
@@ -11,3 +12,5 @@ some tips for bn256 module:
 - bn256.optimal_ate - Ate pairing of G2 and G1 points
 - use additive_inverse() to inverse 'y' in G1 point. Example: y = y.additive_inverse()
 - use negate() function to inverse point in G2. negate() returns nothing! Example: P.negate() -> Q.add(P)
+=======
+>>>>>>> origin/a.tsvik
