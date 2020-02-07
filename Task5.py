@@ -45,9 +45,9 @@ def points(v,G): # vector of -1,1 will be returned as vector of -G,G respectivly
     return out
 
 class MSK: # class for master key
-    def __init__(self,H1,H2,gen1_h,gen2_h,s,t,u,v,A):
-        self.H1 = H1
-        self.H2 = H2
+    def __init__(self,h1,h2,gen1_h,gen2_h,s,t,u,v,A):
+        self.h1 = h1
+        self.h2 = h2
         self.gen1_h = gen1_h
         self.gen2_h = gen2_h
         self.s = s
@@ -72,45 +72,47 @@ class IPE: # inner product encryption realization
         print('\nRandom unimodular matrix:')
         matrix.print_matrix(A)
         h1 = rand.randint(2,q)
-        H1 = self.G1.scalar_mul(h1)
         h2 = rand.randint(2,q)
-        H2 = self.G2.scalar_mul(h2)
-        gen1_h = [self.G1.scalar_mul(s[i]).add(H1.scalar_mul(t[i])) for i in range(self.dim)]
-        gen2_h = [self.G2.scalar_mul(u[i]).add(H2.scalar_mul(v[i])) for i in range(self.dim+2)]
-        return MSK(H1,H2,gen1_h,gen2_h,s,t,u,v,A)
+        gen1_h = [s[i]+h1*t[i] for i in range(self.dim)]
+        gen2_h = [u[i]+h2*v[i] for i in range(self.dim+2)]
+        return MSK(h1,h2,gen1_h,gen2_h,s,t,u,v,A)
     @time_spent
     def Registration(self,msk,v1): # generation of registration template
-        self.v1points = points(v1,self.G2)
         r0 = rand.randint(2,q)
-        reg_template = [self.G2.scalar_mul(r0), msk.H2.scalar_mul(r0)] + [msk.gen2_h[i].scalar_mul(r0) for i in range(self.dim+2)]
-        f2 = self.v1points[0].scalar_mul(msk.s[0])
-        f3 = self.v1points[0].scalar_mul(msk.t[0])
+        reg_template = [r0, msk.h2*r0] + [msk.gen2_h[i]*r0 for i in range(self.dim+2)]
+        f2 = v1[0]*msk.s[0]
+        f3 = v1[0]*msk.t[0]
         for i in range(1,self.dim):
-            f2 = f2.add(self.v1points[i].scalar_mul(msk.s[i]))
-            f3 = f3.add(self.v1points[i].scalar_mul(msk.t[i]))
-            reg_template[i+4] = reg_template[i+4].add(self.v1points[i])
-        reg_template[2] = reg_template[2].add(inv(f2))
-        reg_template[3] = reg_template[3].add(inv(f3))
-        reg_template[4] = reg_template[4].add(self.v1points[0])
-        return self.sort(reg_template,matrix.inverse_matrix(msk.A))
+            f2 = f2+v1[i]*msk.s[i]
+            f3 = f3+v1[i]*msk.t[i]
+            reg_template[i+4] = reg_template[i+4]+v1[i]
+        reg_template[2] = reg_template[2]-f2
+        reg_template[3] = reg_template[3]-f3
+        reg_template[4] = reg_template[4]+v1[0]
+        for i in range(self.dim+4):
+            reg_template[i] = self.G2.scalar_mul(matrix.format_number(reg_template[i],q))
+        reg_template = self.sort(reg_template,matrix.inverse_matrix(msk.A))
+        return reg_template
     @time_spent
     def Authentication(self,msk,v2):  # generation of authentication template
-        self.v2points = points(v2,self.G1)
         r0 = rand.randint(2,q)
-        auth_template = [self.G1.scalar_mul(0)]*2
-        auth_template.append(self.G1.scalar_mul(r0))
-        auth_template.append(msk.H1.scalar_mul(r0))
+        auth_template = [0]*2
+        auth_template.append(r0)
+        auth_template.append(msk.h1*r0)
         for i in range(4,self.dim+4):
-            auth_template.append(msk.gen1_h[i-4].scalar_mul(r0))
-            auth_template[i] = auth_template[i].add(self.v2points[i-4])
-        f0 = auth_template[2].scalar_mul(msk.u[0])
-        f1 = auth_template[2].scalar_mul(msk.v[0])
+            auth_template.append(msk.gen1_h[i-4]*r0)
+            auth_template[i] = auth_template[i]+v2[i-4]
+        f0 = auth_template[2]*msk.u[0]
+        f1 = auth_template[2]*msk.v[0]
         for i in range(1,self.dim+2):
-            f0 = f0.add(auth_template[i+2].scalar_mul(msk.u[i]))
-            f1 = f1.add(auth_template[i+2].scalar_mul(msk.v[i]))
-        auth_template[0] = auth_template[0].add(inv( f0 ))
-        auth_template[1] = auth_template[1].add(inv( f1 ))
-        return self.sort(auth_template,matrix.transpose_matrix(msk.A))
+            f0 = f0+auth_template[i+2]*msk.u[i]
+            f1 = f1+auth_template[i+2]*msk.v[i]
+        auth_template[0] = auth_template[0]- f0
+        auth_template[1] = auth_template[1]- f1
+        for i in range(self.dim+4):
+            auth_template[i] = self.G1.scalar_mul(matrix.format_number(auth_template[i],q))
+        auth_template = self.sort(auth_template,matrix.transpose_matrix(msk.A))
+        return auth_template
     @time_spent
     def LogarithmTable(self): # generation of logarithm table of powers of e(G2,G1)
         A = bn256.optimal_ate(self.G2,self.G1)
@@ -140,15 +142,18 @@ class IPE: # inner product encryption realization
 @time_spent
 def main():
 
+    dim = 16
+
     G1 = bn256.curve_G
     G2 = bn256.twist_G
 
-    reg_vect = biometrics.procces(Image.open('./biometrics/reg.png'))
-    auth_vect = biometrics.procces(Image.open('./biometrics/auth.png'))
+    #reg_vect = biometrics.procces(Image.open('./biometrics/reg.png'))
+    #auth_vect = biometrics.procces(Image.open('./biometrics/auth.png'))
+
+    reg_vect = gen_rand_vect(dim,1,True)
+    auth_vect = gen_rand_vect(dim,1,True)
 
     assert len(reg_vect) == len(auth_vect)
-
-    dim = len(reg_vect)
 
     print('Registration vector:',reg_vect)
     print('Authentication vector:',auth_vect)
